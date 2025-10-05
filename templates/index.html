@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StockPulse - Low Stock Alert System</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Navbar */
+    nav {
+      background: #1e40af;
+      color: white;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+    nav .menu {
+      position: relative;
+    }
+    nav .menu button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    nav .dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      color: black;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 100;
+    }
+    nav .dropdown a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: black;
+      cursor: pointer;
+    }
+    nav .dropdown a:hover {
+      background: #e5e7eb;
+    }
+
+    /* Add Product Button */
+    .add-btn {
+      background: #2563eb;
+      color: white;
+      padding: 10px 20px;
+      margin: 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* Modal Background */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      -webkit-backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+    .modal {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
+      text-align: center;
+    }
+    .modal input {
+      width: 90%;
+      margin: 8px 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .modal button {
+      margin-top: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .modal .cancel-btn {
+      background: #ef4444;
+    }
+
+    /* Right-side Panel Modal */
+    .side-modal-bg {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4);
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+      justify-content: flex-end;
+      z-index: 200;
+    }
+    .side-modal {
+      background: white;
+      width: 350px;
+      height: 100%;
+      padding: 20px;
+      box-shadow: -2px 0 8px rgba(0,0,0,0.2);
+      overflow-y: auto;
+    }
+    .side-modal h3 {
+      margin-top: 0;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+    }
+    .side-modal .close-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav>
+    <span class="logo">📦 StockPulse</span>
+    <div class="menu">
+      <button onclick="toggleMenu()">☰</button>
+      <div class="dropdown" id="menuDropdown">
+        <a onclick="openHome()">🏠 Home</a>
+        <a onclick="openSidePanel('products')">📦 Products</a>
+        <a onclick="openSidePanel('purchases')">🛒 Purchase History</a>
+        <a onclick="openSidePanel('support')">🛠 Support</a>
+        <a onclick="openSidePanel('contact')">📞 Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Home Section -->
+  <div id="homeSection">
+    <button class="add-btn" onclick="openModal()">➕ Add Product</button>
+
+    <!-- Products Table -->
+    <h2>Product List</h2>
+    <table id="product-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Quantity</th>
+          <th>Threshold</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Purchase History -->
+    <h2>Purchase History</h2>
+    <table id="purchase-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <h3>Add Product</h3>
+      <input type="text" id="name" placeholder="Product Name">
+      <input type="number" id="quantity" placeholder="Quantity">
+      <input type="number" id="threshold" placeholder="Threshold">
+      <button onclick="addProduct()">Add</button>
+      <button onclick="closeModal()" class="cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Side Panel Modal -->
+  <div class="side-modal-bg" id="sideModalBg">
+    <div class="side-modal">
+      <button class="close-btn" onclick="closeSidePanel()">Close</button>
+      <h3 id="sideModalTitle"></h3>
+      <div id="sideModalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    // Navbar menu
+    function toggleMenu() {
+      const menu = document.getElementById("menuDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // Home (default)
+    function openHome() {
+      document.getElementById("homeSection").style.display = "block";
+      closeSidePanel();
+    }
+
+    // Open Add Product Modal
+    function openModal() {
+      document.getElementById("modalBg").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("modalBg").style.display = "none";
+    }
+
+    // Side Panel
+    function openSidePanel(type) {
+      document.getElementById("homeSection").style.display = "none";
+      document.getElementById("sideModalBg").style.display = "flex";
+      document.getElementById("sideModalTitle").innerText = type.charAt(0).toUpperCase() + type.slice(1);
+
+      let content = "";
+      if (type === "support") {
+        content = "<p>For support, please email support@stockpulse.com</p>";
+      } else if (type === "contact") {
+        content = "<p>Contact us at: +91 98765 43210</p>";
+      } else if (type === "products") {
+        content = document.getElementById("product-table").outerHTML;
+      } else if (type === "purchases") {
+        content = document.getElementById("purchase-table").outerHTML;
+      }
+      document.getElementById("sideModalContent").innerHTML = content;
+    }
+    function closeSidePanel() {
+      document.getElementById("sideModalBg").style.display = "none";
+      document.getElementById("homeSection").style.display = "block";
+    }
+
+    // Backend functions
+    async function loadProducts() {
+      const res = await fetch('/products');
+      const result = await res.json();
+      const products = result.data;
+      const tbody = document.querySelector('#product-table tbody');
+      tbody.innerHTML = '';
+      products.forEach(p => {
+        const row = `<tr>
+          <td>${p.name}</td>
+          <td>${p.quantity}</td>
+          <td>${p.threshold}</td>
+          <td>${p.low_stock ? "⚠️ Low Stock" : "✅ OK"}</td>
+          <td>
+            <button onclick="updateProduct(${p.id})">Update</button>
+            <button onclick="deleteProduct(${p.id})" style="background:#ef4444;color:white;">Delete</button>
+            <button onclick="recordPurchase('${p.id}')">Purchase</button>
+          </td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    async function loadPurchases() {
+      const res = await fetch('/purchases');
+      const result = await res.json();
+      const purchases = result.data;
+      const tbody = document.querySelector('#purchase-table tbody');
+      tbody.innerHTML = '';
+      purchases.forEach(p => {
+        tbody.innerHTML += `<tr>
+          <td>${p.name}</td>
+          <td>${p.quantity}</td>
+          <td>${p.date}</td>
+        </tr>`;
+      });
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('name').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const threshold = parseInt(document.getElementById('threshold').value);
+
+      const res = await fetch('/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, quantity, threshold })
+      });
+      const result = await res.json();
+      alert(result.message);
+      closeModal();
+      loadProducts();
+    }
+
+    async function updateProduct(id) {
+      const name = prompt("Enter new name:");
+      const quantity = prompt("Enter new quantity:");
+      const threshold = prompt("Enter new threshold:");
+
+      if (name && quantity && threshold) {
+        const res = await fetch(`/products/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, quantity: parseInt(quantity), threshold: parseInt(threshold) })
+        });
+        const result = await res.json();
+        alert(result.message);
+        loadProducts();
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (confirm("Are you sure you want to delete this product?")) {
+        const res = await fetch(`/products/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        alert(result.message);
+        loadProducts();
+      }
+    }
+
+    async function recordPurchase(productId) {
+      const quantity = prompt(`Enter purchase quantity:`);
+      if (quantity) {
+        const res = await fetch('/purchases', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: productId, quantity: parseInt(quantity) })
+        });
+        const result = await res.json();
+        alert(result.message);
+        loadProducts();
+        loadPurchases();
+      }
+    }
+
+    // Load data on startup
+    loadProducts();
+    loadPurchases();
+  </script>
+</body>
+</html>

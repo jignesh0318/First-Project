@@ -1,0 +1,269 @@
+/* Global Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f7f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar */
+nav {
+    background-color: #2563eb; /* Blue */
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+/* Logo text inside navbar */
+nav .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+}
+
+/* Dropdown Menu */
+nav .menu {
+    position: relative;
+}
+nav .menu button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+nav .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: white;
+    color: black;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 180px;
+}
+nav .dropdown a {
+    display: block;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: black;
+    font-size: 14px;
+}
+nav .dropdown a:hover {
+    background: #f1f5f9;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px 20px;
+}
+
+/* Section Headers */
+h2 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: #333;
+    margin: 25px 0 20px;
+    font-weight: 600;
+}
+
+/* Add Product Button */
+.add-btn {
+    background-color: #2563eb;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 20px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.add-btn:hover {
+    background-color: #1d4ed8;
+    transform: scale(1.03);
+}
+
+/* Modal Background */
+.modal-bg {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.4);
+    -webkit-backdrop-filter: blur(5px); /* Safari support */
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+}
+
+/* Modal Window */
+.modal {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: popup 0.25s ease;
+}
+@keyframes popup {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    color: #2563eb;
+}
+
+.modal input {
+    width: 90%;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+}
+.modal input:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 6px rgba(37,99,235,0.3);
+}
+
+.modal button {
+    margin: 8px 5px 0;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+}
+.modal button:hover {
+    transform: scale(1.05);
+}
+.modal button:first-of-type {
+    background: #2563eb;
+    color: white;
+}
+.modal button:last-of-type {
+    background: #ef4444;
+    color: white;
+}
+
+/* Product Table */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+table thead {
+    background-color: #f1f5f9;
+    font-weight: bold;
+}
+
+table th, table td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Highlight low stock rows */
+.low-stock-row {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    font-weight: bold;
+}
+
+/* Update, Delete & Purchase Buttons */
+td button {
+    margin: 3px;
+    width: auto;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+td button:hover {
+    transform: scale(1.05);
+}
+
+.btn-update {
+    background-color: #f59e0b;
+    color: #fff;
+}
+.btn-update:hover {
+    background-color: #d97706;
+}
+
+.btn-delete {
+    background-color: #ef4444;
+    color: #fff;
+}
+.btn-delete:hover {
+    background-color: #dc2626;
+}
+
+.btn-purchase {
+    background-color: #22c55e;
+    color: #fff;
+}
+.btn-purchase:hover {
+    background-color: #16a34a;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    nav .logo {
+        font-size: 1rem;
+    }
+    table th, table td {
+        font-size: 13px;
+        padding: 10px;
+    }
+    .add-btn {
+        width: 100%;
+    }
+}
